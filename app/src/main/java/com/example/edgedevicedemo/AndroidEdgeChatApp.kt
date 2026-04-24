@@ -5,17 +5,21 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.text.format.Formatter
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import com.example.edgedevicedemo.chat.LocalModelManager
 import com.example.edgedevicedemo.data.AppPreferences
 import com.example.edgedevicedemo.shared.chat.EdgeChatController
 import com.example.edgedevicedemo.shared.chat.MultiCloudChatClient
+import com.example.edgedevicedemo.shared.model.AppTab
 import com.example.edgedevicedemo.shared.model.ImportedLocalModel
 import com.example.edgedevicedemo.shared.ui.EdgeChatApp
 import com.example.edgedevicedemo.shared.ui.EdgeChatTheme
@@ -38,16 +42,23 @@ fun AndroidEdgeChatApp() {
             cloudChatClient = cloudChatClient
         )
     }
+    val state by controller.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     DisposableEffect(controller) {
         onDispose { controller.close() }
     }
 
+    BackHandler(enabled = state.currentTab == AppTab.Settings) {
+        controller.selectTab(AppTab.Chat)
+    }
+
     val importLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         if (uri != null) {
+            // Show "Copying…" spinner immediately — before the IO copy starts.
+            controller.onLocalModelImportStarted()
             coroutineScope.launch {
                 runCatching {
                     application.contentResolver.importModelFile(uri, application.filesDir)
@@ -86,11 +97,15 @@ private suspend fun android.content.ContentResolver.importModelFile(
     val modelDirectory = File(appFilesDir, "models").apply { mkdirs() }
     val targetFile = File(modelDirectory, sanitizeFileName(displayName))
 
-    openInputStream(uri)?.use { input ->
-        targetFile.outputStream().use { output ->
-            input.copyTo(output)
-        }
-    } ?: error("Unable to open the selected model file.")
+    // Skip the copy if the exact same file is already present in app storage
+    // (happens when the user picks the same model a second time).
+    if (!targetFile.exists() || targetFile.length() == 0L) {
+        openInputStream(uri)?.use { input ->
+            targetFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        } ?: error("Unable to open the selected model file.")
+    }
 
     ImportedLocalModel(
         path = targetFile.absolutePath,

@@ -7,7 +7,7 @@ import com.example.edgedevicedemo.shared.chat.EdgeChatController
 import com.example.edgedevicedemo.shared.chat.MultiCloudChatClient
 import com.example.edgedevicedemo.shared.model.AppSettings
 import com.example.edgedevicedemo.shared.model.CloudProvider
-import com.example.edgedevicedemo.shared.model.LocalBackend
+// import com.example.edgedevicedemo.shared.model.LocalBackend
 import com.example.edgedevicedemo.shared.model.ProviderMode
 import com.example.edgedevicedemo.shared.platform.SettingsStore
 import com.example.edgedevicedemo.shared.platform.UnsupportedLocalChatService
@@ -47,12 +47,16 @@ private class IosSettingsStore : SettingsStore {
             localModelPath = defaults.stringForKey(KEY_LOCAL_MODEL_PATH),
             localModelName = defaults.stringForKey(KEY_LOCAL_MODEL_NAME) ?: "",
             localModelSizeBytes = defaults.stringForKey(KEY_LOCAL_MODEL_SIZE)?.toLongOrNull(),
-            localBackend = defaults.stringForKey(KEY_LOCAL_BACKEND)
-                ?.let(LocalBackend::valueOf)
-                ?: LocalBackend.Cpu,
+//            localBackend = defaults.stringForKey(KEY_LOCAL_BACKEND)
+//                ?.let(LocalBackend::valueOf)
+//                ?: LocalBackend.Cpu,
             cloudProvider = defaults.stringForKey(KEY_CLOUD_PROVIDER)
                 ?.let(CloudProvider::valueOf)
                 ?: CloudProvider.entries.first(),
+            geminiApiKey = defaults.stringForKey(KEY_GEMINI_API_KEY) ?: "",
+            openAiApiKey = defaults.stringForKey(KEY_OPENAI_API_KEY) ?: "",
+            grokApiKey = defaults.stringForKey(KEY_GROK_API_KEY) ?: "",
+            claudeApiKey = defaults.stringForKey(KEY_CLAUDE_API_KEY) ?: "",
             allowCloudFallback = defaults.objectForKey(KEY_ALLOW_CLOUD_FALLBACK)?.let {
                 defaults.boolForKey(KEY_ALLOW_CLOUD_FALLBACK)
             } ?: true,
@@ -75,8 +79,12 @@ private class IosSettingsStore : SettingsStore {
         } else {
             defaults.setObject(settings.localModelSizeBytes.toString(), forKey = KEY_LOCAL_MODEL_SIZE)
         }
-        defaults.setObject(settings.localBackend.name, forKey = KEY_LOCAL_BACKEND)
+//        defaults.setObject(settings.localBackend.name, forKey = KEY_LOCAL_BACKEND)
         defaults.setObject(settings.cloudProvider.name, forKey = KEY_CLOUD_PROVIDER)
+        defaults.setObject(settings.geminiApiKey, forKey = KEY_GEMINI_API_KEY)
+        defaults.setObject(settings.openAiApiKey, forKey = KEY_OPENAI_API_KEY)
+        defaults.setObject(settings.grokApiKey, forKey = KEY_GROK_API_KEY)
+        defaults.setObject(settings.claudeApiKey, forKey = KEY_CLAUDE_API_KEY)
         defaults.setBool(settings.allowCloudFallback, forKey = KEY_ALLOW_CLOUD_FALLBACK)
         defaults.setBool(settings.stayOfflineWhenLocal, forKey = KEY_STAY_OFFLINE_WHEN_LOCAL)
     }
@@ -86,8 +94,12 @@ private class IosSettingsStore : SettingsStore {
         private const val KEY_LOCAL_MODEL_PATH = "local_model_path"
         private const val KEY_LOCAL_MODEL_NAME = "local_model_name"
         private const val KEY_LOCAL_MODEL_SIZE = "local_model_size"
-        private const val KEY_LOCAL_BACKEND = "local_backend"
+//        private const val KEY_LOCAL_BACKEND = "local_backend"
         private const val KEY_CLOUD_PROVIDER = "cloud_provider"
+        private const val KEY_GEMINI_API_KEY = "gemini_api_key"
+        private const val KEY_OPENAI_API_KEY = "openai_api_key"
+        private const val KEY_GROK_API_KEY = "grok_api_key"
+        private const val KEY_CLAUDE_API_KEY = "claude_api_key"
         private const val KEY_ALLOW_CLOUD_FALLBACK = "allow_cloud_fallback"
         private const val KEY_STAY_OFFLINE_WHEN_LOCAL = "stay_offline_when_local"
     }

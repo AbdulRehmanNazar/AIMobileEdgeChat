@@ -23,7 +23,8 @@
             android:name=".AppActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.EdgeDeviceDemo">
+            android:theme="@style/Theme.EdgeDeviceDemo"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

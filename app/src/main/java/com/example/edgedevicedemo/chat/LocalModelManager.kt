@@ -52,7 +52,7 @@ class LocalModelManager(
 
             val backendOrder = when (settings.localBackend) {
                 LocalBackend.Cpu -> listOf(LocalBackend.Cpu)
-                LocalBackend.Gpu -> listOf(LocalBackend.Gpu, LocalBackend.Cpu)
+                // LocalBackend.Gpu -> listOf(LocalBackend.Gpu, LocalBackend.Cpu)
             }
 
             var lastError: Throwable? = null
@@ -138,7 +138,7 @@ class LocalModelManager(
 
     private fun LocalBackend.toRuntimeBackend(): Backend {
         return when (this) {
-            LocalBackend.Gpu -> Backend.GPU()
+            // LocalBackend.Gpu -> Backend.GPU()
             LocalBackend.Cpu -> Backend.CPU()
         }
     }
