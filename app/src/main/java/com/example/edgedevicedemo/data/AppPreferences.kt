@@ -1,14 +1,15 @@
 package com.example.edgedevicedemo.data
 
 import android.content.Context
-import com.example.edgedevicedemo.ui.AppSettings
-import com.example.edgedevicedemo.ui.LocalBackend
-import com.example.edgedevicedemo.ui.ProviderMode
+import com.example.edgedevicedemo.shared.model.AppSettings
+import com.example.edgedevicedemo.shared.model.LocalBackend
+import com.example.edgedevicedemo.shared.model.ProviderMode
+import com.example.edgedevicedemo.shared.platform.SettingsStore
 
-class AppPreferences(context: Context) {
+class AppPreferences(context: Context) : SettingsStore {
     private val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    fun load(): AppSettings {
+    override fun load(): AppSettings {
         return AppSettings(
             providerMode = preferences.getString(KEY_PROVIDER_MODE, ProviderMode.Local.name)
                 ?.let(ProviderMode::valueOf)
@@ -28,16 +29,17 @@ class AppPreferences(context: Context) {
         )
     }
 
-    fun save(settings: AppSettings) {
+    override fun save(settings: AppSettings) {
+        val localModelSizeBytes = settings.localModelSizeBytes
         preferences.edit()
             .putString(KEY_PROVIDER_MODE, settings.providerMode.name)
             .putString(KEY_LOCAL_MODEL_PATH, settings.localModelPath)
             .putString(KEY_LOCAL_MODEL_NAME, settings.localModelName)
             .apply {
-                if (settings.localModelSizeBytes == null) {
+                if (localModelSizeBytes == null) {
                     remove(KEY_LOCAL_MODEL_SIZE)
                 } else {
-                    putLong(KEY_LOCAL_MODEL_SIZE, settings.localModelSizeBytes)
+                    putLong(KEY_LOCAL_MODEL_SIZE, localModelSizeBytes)
                 }
             }
             .putString(KEY_LOCAL_BACKEND, settings.localBackend.name)

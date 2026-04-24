@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "EdgeDeviceDemo"
 include(":app")
+include(":shared")
