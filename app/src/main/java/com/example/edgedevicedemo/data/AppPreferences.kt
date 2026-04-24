@@ -2,6 +2,7 @@ package com.example.edgedevicedemo.data
 
 import android.content.Context
 import com.example.edgedevicedemo.shared.model.AppSettings
+import com.example.edgedevicedemo.shared.model.CloudProvider
 import com.example.edgedevicedemo.shared.model.LocalBackend
 import com.example.edgedevicedemo.shared.model.ProviderMode
 import com.example.edgedevicedemo.shared.platform.SettingsStore
@@ -21,9 +22,9 @@ class AppPreferences(context: Context) : SettingsStore {
             localBackend = preferences.getString(KEY_LOCAL_BACKEND, LocalBackend.Gpu.name)
                 ?.let(LocalBackend::valueOf)
                 ?: LocalBackend.Gpu,
-            cloudModelName = preferences.getString(KEY_CLOUD_MODEL_NAME, DEFAULT_CLOUD_MODEL)
-                ?: DEFAULT_CLOUD_MODEL,
-            cloudApiKey = preferences.getString(KEY_CLOUD_API_KEY, "") ?: "",
+            cloudProvider = preferences.getString(KEY_CLOUD_PROVIDER, CloudProvider.entries.first().name)
+                ?.let(CloudProvider::valueOf)
+                ?: CloudProvider.entries.first(),
             allowCloudFallback = preferences.getBoolean(KEY_ALLOW_CLOUD_FALLBACK, true),
             stayOfflineWhenLocal = preferences.getBoolean(KEY_STAY_OFFLINE_WHEN_LOCAL, true)
         )
@@ -43,8 +44,7 @@ class AppPreferences(context: Context) : SettingsStore {
                 }
             }
             .putString(KEY_LOCAL_BACKEND, settings.localBackend.name)
-            .putString(KEY_CLOUD_MODEL_NAME, settings.cloudModelName)
-            .putString(KEY_CLOUD_API_KEY, settings.cloudApiKey)
+            .putString(KEY_CLOUD_PROVIDER, settings.cloudProvider.name)
             .putBoolean(KEY_ALLOW_CLOUD_FALLBACK, settings.allowCloudFallback)
             .putBoolean(KEY_STAY_OFFLINE_WHEN_LOCAL, settings.stayOfflineWhenLocal)
             .apply()
@@ -57,11 +57,8 @@ class AppPreferences(context: Context) : SettingsStore {
         private const val KEY_LOCAL_MODEL_NAME = "local_model_name"
         private const val KEY_LOCAL_MODEL_SIZE = "local_model_size"
         private const val KEY_LOCAL_BACKEND = "local_backend"
-        private const val KEY_CLOUD_MODEL_NAME = "cloud_model_name"
-        private const val KEY_CLOUD_API_KEY = "cloud_api_key"
+        private const val KEY_CLOUD_PROVIDER = "cloud_provider"
         private const val KEY_ALLOW_CLOUD_FALLBACK = "allow_cloud_fallback"
         private const val KEY_STAY_OFFLINE_WHEN_LOCAL = "stay_offline_when_local"
-
-        private const val DEFAULT_CLOUD_MODEL = "gemini-2.5-flash-lite"
     }
 }
